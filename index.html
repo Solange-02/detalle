@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Collage Interactivo para Ti 💖</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(to right, #ee9ca7, #ffdde1);
+      overflow-x: hidden;
+    }
+
+    /* --- LOGIN --- */
+    #login {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    #login h2 {
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+    #login input {
+      padding: 12px;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 15px;
+      width: 200px;
+    }
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 70px);
+      gap: 10px;
+      justify-content: center;
+    }
+    .keypad button {
+      font-size: 1.2rem;
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #fff;
+      color: #333;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+    }
+    .keypad button:hover {
+      transform: scale(1.1);
+      background: #f0f0f0;
+    }
+    .keypad .zero {
+      grid-column: span 2;
+    }
+    .keypad .delete {
+      background: #ff4f81;
+      color: white;
+    }
+
+    /* --- CONTENIDO PRINCIPAL --- */
+    #content {
+      display: none;
+      padding-bottom: 50px;
+    }
+
+    h1 {
+      text-align: center;
+      padding: 30px 15px;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #00c6ff, #0072ff, #00c6ff);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: shine 4s linear infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    @keyframes shine {
+      from { background-position: 0%; }
+      to { background-position: 200%; }
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .card {
+      position: relative;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.4s ease;
+      height: 220px;
+    }
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s;
+    }
+    .card:hover img {
+      transform: scale(1.1);
+    }
+    .caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      text-align: center;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .card:hover .caption {
+      opacity: 1;
+    }
+
+    .music-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 12px 25px;
+      background: #0072ff;
+      border: none;
+      border-radius: 25px;
+      color: #fff;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: background 0.3s;
+    }
+    .music-btn:hover {
+      background: #0056cc;
+    }
+
+    .stitch-icon {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+    }
+
+    /* 💖 Corazones flotando */
+    .heart {
+      position: fixed;
+      bottom: -10px;
+      font-size: 20px;
+      color: #ff4f81;
+      animation: float 6s linear infinite;
+      opacity: 0.7;
+    }
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { transform: translateY(-800px) scale(1.5); opacity: 0; }
+    }
+
+    /* --- CARTA ELEGANTE --- */
+    #letterModal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 15px;
+    }
+    .letter {
+      background: #fff;
+      padding: 20px;
+      max-width: 90%;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      animation: fadeIn 1s ease;
+    }
+    .letter h2 {
+      margin-bottom: 10px;
+      color: #0072ff;
+      font-size: 1.4rem;
+    }
+    .letter p {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #333;
+    }
+    .close-btn {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ff4f81;
+      color: white;
+      cursor: pointer;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* 📱 ADAPTACIÓN A CELULAR */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+        padding: 20px 10px;
+      }
+      .stitch-icon {
+        width: 60px;
+        height: 60px;
+      }
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      .card {
+        height: 160px;
+      }
+      #login h2 {
+        font-size: 1.5rem;
+      }
+      .keypad {
+        grid-template-columns: repeat(3, 60px);
+        gap: 8px;
+      }
+      .keypad button {
+        font-size: 1rem;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔐 LOGIN -->
+  <div id="login">
+    <h2>Ingresa la contraseña</h2>
+    <input type="password" id="password" placeholder="Solo números" readonly>
+    <div class="keypad">
+      <button onclick="pressKey('1')">1</button>
+      <button onclick="pressKey('2')">2</button>
+      <button onclick="pressKey('3')">3</button>
+      <button onclick="pressKey('4')">4</button>
+      <button onclick="pressKey('5')">5</button>
+      <button onclick="pressKey('6')">6</button>
+      <button onclick="pressKey('7')">7</button>
+      <button onclick="pressKey('8')">8</button>
+      <button onclick="pressKey('9')">9</button>
+      <button class="zero" onclick="pressKey('0')">0</button>
+      <button class="delete" onclick="deleteKey()">⌫</button>
+    </div>
+    <button onclick="checkPassword()" style="margin-top:15px; padding:10px 20px; border:none; border-radius:8px; background:#00c6ff; color:white; cursor:pointer;">Entrar</button>
+  </div>
+
+  <!-- 🌟 CONTENIDO PRINCIPAL -->
+  <div id="content">
+    <h1 data-aos="fade-down">
+      <img src="fotoss/stichsol.png" alt="Stitch" class="stitch-icon">
+      Un detalle especial para ti
+      <img src="fotoss/stichsol.png" alt="Stitch" class="stitch-icon">
+    </h1>
+
+    <!-- 📜 Carta Modal -->
+    <div id="letterModal">
+      <div class="letter">
+        <h2>💌 Una carta para ti 💌</h2>
+        <p>
+          Hoy quiero regalarte este pequeño detalle especial, lleno de cariño y amistad.  
+          Gracias por estar presente en mi vida, por tu alegría y por todos los momentos compartidos.  
+          Eres alguien única, y me siento afortunado de poder tenerte. 🌸
+        </p>
+        <button class="close-btn" onclick="closeLetter()">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- 🖼️ Collage -->
+    <div class="gallery">
+      <div class="card" data-aos="fade-up">
+        <img src="fotoss/img1.jpeg" alt="Foto 1">
+        <div class="caption">Siempre contigo 💕</div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <img src="fotoss/img2.jpeg" alt="Foto 2">
+        <div class="caption">Gracias por tu amistad ✨</div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="400">
+        <img src="fotoss/img3.jpeg" alt="Foto 3">
+        <div class="caption">Eres única 🌟</div>
+      </div>
+      <div class="card" data-aos="fade-up" data-aos-delay="600">
+        <img src="fotoss/img4.jpeg" alt="Foto 4">
+        <div class="caption">Me alegra tenerte en mi vida 💖</div>
+      </div>
+    </div>
+
+    <!-- 🎵 Música -->
+    <audio id="bg-music" loop>
+      <source src="musica.mp3" type="audio/mpeg">
+      Tu navegador no soporta el audio.
+    </audio>
+    <button class="music-btn" onclick="toggleMusic()">🎵 Reproducir / Pausar Música</button>
+  </div>
+
+  <!-- ❤️ Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init({ duration: 1000, once: true });
+
+    // ❤️ Corazones
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = Math.random() * 100 + "vw";
+      heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+      heart.innerText = "💖";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+    setInterval(createHeart, 800);
+
+    // 🎵 Música
+    const music = document.getElementById("bg-music");
+    function toggleMusic() {
+      if (music.paused) { music.play(); } else { music.pause(); }
+    }
+
+    // 🔐 Login
+    const passwordInput = document.getElementById("password");
+    const correctPassword = "020922";
+    function pressKey(num) { passwordInput.value += num; }
+    function deleteKey() { passwordInput.value = passwordInput.value.slice(0, -1); }
+    function checkPassword() {
+      if (passwordInput.value === correctPassword) {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("content").style.display = "block";
+      } else {
+        alert("Contraseña incorrecta ❌");
+        passwordInput.value = "";
+      }
+    }
+
+    // 📜 Carta
+    function closeLetter() {
+      document.getElementById("letterModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>
