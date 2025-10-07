@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Solange💖</title>
+<style>
+  :root{
+    --accent:#ff4f81;
+    --bg1:#ffd6e0;
+    --bg2:#fff0f6;
+    --text:#3b2b3b;
+    --soft:#fff8fb;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:"Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    background: linear-gradient(120deg,var(--bg1),var(--bg2) 60%);
+    overflow-x:hidden;
+  }
+
+  /* ---------- animated blurred gradient and particles (background) ---------- */
+  .bg {
+    position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+  }
+  .bg .blur {
+    position:absolute; inset:-20%;
+    background: linear-gradient(60deg, rgba(255,200,220,0.35), rgba(200,230,255,0.18), rgba(255,220,240,0.28));
+    filter: blur(70px);
+    transform: translateX(-10%);
+    animation: gradientShift 20s linear infinite;
+    opacity:0.95;
+  }
+  @keyframes gradientShift{
+    0%{ transform: translateX(-25%) rotate(0deg) scale(1); }
+    50%{ transform: translateX(10%) rotate(8deg) scale(1.02); }
+    100%{ transform: translateX(-25%) rotate(0deg) scale(1); }
+  }
+  .bg .particle {
+    position:absolute;
+    border-radius:50%;
+    background:rgba(255,255,255,0.6);
+    filter: blur(0.6px);
+    animation: floatUp linear infinite;
+  }
+  @keyframes floatUp {
+    0%{ transform: translateY(0); opacity:0; }
+    10%{ opacity:1; }
+    100%{ transform: translateY(-120vh); opacity:0; }
+  }
+
+  /* ---------- LOGIN ---------- */
+  #loginWrap{
+    z-index:12;
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+  }
+  .login-card{
+    width:100%; max-width:440px;
+    background: linear-gradient(145deg,#667eea,#764ba2);
+    color:white; padding:26px; border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,0.18);
+    text-align:center;
+  }
+  .login-card h2{ margin:0 0 12px 0; font-size:22px; }
+  .login-card input{
+    width:220px; padding:12px; border-radius:10px; border:none; text-align:center; font-size:16px;
+  }
+  .keypad{ margin-top:14px; display:grid; grid-template-columns:repeat(3,64px); gap:10px; justify-content:center; }
+  .keypad button{
+    height:56px; border-radius:12px; border:none; background:#fff; color:#333; font-size:18px; cursor:pointer;
+    box-shadow:0 8px 18px rgba(0,0,0,0.12);
+  }
+  .keypad .zero{ grid-column: span 2; }
+  .keypad .del{ background: var(--accent); color:#fff; }
+  .enter-btn{ margin-top:14px; padding:10px 22px; border-radius:12px; background:#00c6ff; color:#fff; border:none; cursor:pointer; box-shadow:0 8px 18px rgba(0,0,0,0.12); }
+
+  .fade-out { animation: fadeOutLogin 0.7s forwards; }
+  @keyframes fadeOutLogin { to { opacity:0; transform:translateY(-8px); pointer-events:none; } }
+
+  /* ---------- MAIN CONTENT ---------- */
+  #content{ display:none; position:relative; z-index:6; padding:20px; max-width:1100px; margin:0 auto; text-align:center; }
+
+  header{ margin-top:34px; }
+  h1{
+    font-size:2.1rem; margin:0; display:inline-block;
+    background: linear-gradient(90deg,#00c6ff,#0072ff);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; padding:6px 12px; border-radius:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,0.06);
+  }
+  h1 .emoji{ -webkit-text-fill-color:initial; background:none; margin-left:8px; font-size:1.05em; vertical-align:middle; }
+
+  /* ---------- LETTER (initial) ---------- */
+  #letterModal{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:60; background:rgba(0,0,0,0.5); }
+  .letter-card{
+    width:92%; max-width:620px; background:linear-gradient(180deg,#fff8fb,#fff0f6);
+    padding:26px; border-radius:18px; box-shadow:0 18px 40px rgba(0,0,0,0.25);
+    border:2px solid rgba(255,79,129,0.08); text-align:center;
+  }
+  .letter-card h2{ color:var(--accent); margin:0 0 10px 0; }
+  .letter-card p{ color:#444; line-height:1.6; white-space:pre-line; }
+  .letter-actions{ margin-top:18px; display:flex; gap:12px; justify-content:center; }
+  .letter-actions button{ padding:10px 14px; border-radius:999px; border:none; cursor:pointer; }
+
+  /* ---------- CAROUSEL 3D (vertical-ish 4:5 slides) ---------- */
+  .carousel-wrap{
+    margin:60px auto 8px auto;
+    width:min(920px, 94%);
+    height: 460px;
+    perspective: 1400px;
+    position:relative;
+  }
+
+  .carousel-3d{
+    width:100%; height:100%; position:relative; transform-style:preserve-3d;
+    transition: transform 700ms cubic-bezier(.22,.9,.3,1);
+    margin:0 auto;
+  }
+
+  /* slide size 4:5 ratio for good faces framing */
+  .slide{
+    position:absolute;
+    left:50%; top:50%;
+    width:320px; height:400px; margin-left:-160px; margin-top:-200px;
+    border-radius:16px; overflow:hidden; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(180deg, #fff9fb, #fff4f8);
+    box-shadow:0 18px 40px rgba(0,0,0,0.18);
+    backface-visibility:hidden;
+  }
+
+  .slide img{
+    width:100%; height:100%; object-fit:contain; display:block; background:#fff0f6;
+  }
+
+  /* subtle reflection bottom */
+  .slide::after{
+    content:"";
+    position:absolute; left:0; right:0; bottom:-6%;
+    height:40%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+    transform: translateY(100%) scaleY(-1);
+    opacity:0.22;
+    pointer-events:none;
+  }
+
+  /* nav buttons */
+  .nav{ margin-top:12px; display:flex; gap:12px; justify-content:center; }
+  .nav button{ width:46px; height:46px; border-radius:50%; border:none; background:rgba(255,255,255,0.95); box-shadow:0 8px 18px rgba(0,0,0,0.12); cursor:pointer; }
+
+  /* timer & music */
+  #timer{ margin-top:28px; font-weight:700; font-size:1.05rem; display:inline-block; background:rgba(255,255,255,0.95); padding:10px 14px; border-radius:22px; box-shadow:0 10px 30px rgba(0,0,0,0.08); }
+  .music-btn{ margin-top:18px; padding:10px 18px; border-radius:20px; border:none; background:#0072ff; color:#fff; cursor:pointer; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+
+  /* floating hearts & cursor trail */
+  .floating-heart{ position:fixed; bottom:-10px; font-size:18px; z-index:3; pointer-events:none; opacity:0.9; animation: floatH linear infinite; }
+  @keyframes floatH{ from{ transform: translateY(0); } to{ transform: translateY(-800px) scale(1.5); opacity:0 } }
+  .cursor-heart{ position:fixed; pointer-events:none; z-index:9999; transform:translate(-50%,-50%); transition: transform .25s linear, opacity .6s linear; }
+
+  /* confetti container */
+  .confetti{ position:fixed; inset:0; pointer-events:none; z-index:9999; }
+
+  /* responsive tweaks */
+  @media (max-width:900px){
+    .carousel-wrap{ height:420px; }
+    .slide{ width:280px; height:350px; margin-left:-140px; margin-top:-175px; }
+  }
+  @media (max-width:480px){
+    .carousel-wrap{ height:360px; margin-top:40px; }
+    .slide{ width:210px; height:262px; margin-left:-105px; margin-top:-131px; border-radius:12px; }
+    .carousel-wrap{ perspective:1000px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- background visuals -->
+  <div class="bg" aria-hidden="true">
+    <div class="blur" aria-hidden="true"></div>
+    <div id="bgParticles"></div>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginWrap">
+    <div class="login-card" id="loginCard">
+      <h2>Ingresa la contraseña 💞</h2>
+      <input id="pwd" type="password" placeholder="" readonly>
+      <div class="keypad" aria-hidden="false">
+        <button onclick="press('1')">1</button><button onclick="press('2')">2</button><button onclick="press('3')">3</button>
+        <button onclick="press('4')">4</button><button onclick="press('5')">5</button><button onclick="press('6')">6</button>
+        <button onclick="press('7')">7</button><button onclick="press('8')">8</button><button onclick="press('9')">9</button>
+        <button class="zero" onclick="press('0')">0</button><button class="del" onclick="backspace()">⌫</button>
+      </div>
+      <button class="enter-btn" onclick="submitPwd()">Entrar</button>
+    </div>
+  </div>
+
+  <!-- LETTER (initial) -->
+  <div id="letterModal" style="display:none;">
+    <div class="letter-card">
+      <h2>💌 Una carta para ti 💌</h2>
+      <p id="letterText">
+Hoy quiero regalarte este pequeño rincón lleno de cariño y buenos recuerdos.
+Gracias por cada sonrisa, por tu compañía y por hacer mis días más bonitos.
+Eres alguien muy especial renegona. 💖
+      </p>
+      <div class="letter-actions">
+        <button onclick="closeLetter()" style="background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:999px;">Ver recuerdos</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="content">
+    <header><h1> Un Pequeño Presente <span class="emoji">💞</span></h1></header>
+
+    <!-- 3D carousel -->
+    <div class="carousel-wrap" id="carouselWrap" aria-hidden="false">
+      <div class="carousel-3d" id="carousel3d" role="list"></div>
+    </div>
+
+    <div class="nav">
+      <button id="prevBtn" aria-label="Anterior">&#10094;</button>
+      <button id="nextBtn" aria-label="Siguiente">&#10095;</button>
+    </div>
+
+    <div id="timer" aria-live="polite"></div>
+    <button class="music-btn" id="musicBtn">🎶 Reproducir / Pausar</button>
+  </div>
+
+  <!-- trail/confetti/particles -->
+  <div id="cursorTrail" aria-hidden="true"></div>
+  <div id="confetti" class="confetti" aria-hidden="true"></div>
+
+  <!-- audio -->
+  <audio id="bgAudio" src="musica.mp3" preload="auto" loop></audio>
+
+<script>
+/* ---------- Config ---------- */
+const PASSWORD = "020922";
+const IMAGES = [
+  "fotoss/img1.jpeg",
+  "fotoss/img2.jpeg",
+  "fotoss/img3.jpeg",
+  "fotoss/img4.jpeg",
+  "fotoss/img5.jpeg",
+  "fotoss/img6.jpeg"
+];
+
+/* ---------- Login keypad ---------- */
+const pwd = document.getElementById('pwd');
+function press(n){ pwd.value += n; }
+function backspace(){ pwd.value = pwd.value.slice(0,-1); }
+function submitPwd(){
+  if(pwd.value === PASSWORD){
+    document.getElementById('loginCard').classList.add('fade-out');
+    setTimeout(()=>{
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('letterModal').style.display = 'flex';
+      // try to start music (user gesture)
+      try { document.getElementById('bgAudio').volume = 0.45; document.getElementById('bgAudio').play(); } catch(e){}
+      createBgParticles();
+    },700);
+  } else {
+    alert('Contraseña incorrecta ❌');
+    pwd.value = '';
+  }
+}
+
+/* ---------- Close letter => show content and init carousel ---------- */
+function closeLetter(){
+  document.getElementById('letterModal').style.display = 'none';
+  document.getElementById('content').style.display = 'block';
+  initCarousel3D();
+  startAutoRotate();
+}
+
+/* ---------- Create subtle background particles ---------- */
+function createBgParticles(){
+  const container = document.getElementById('bgParticles');
+  const count = 24;
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'bg-particle';
+    const size = 3 + Math.random()*8;
+    el.style.width = el.style.height = size + 'px';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.top = (72 + Math.random()*28) + 'vh';
+    el.style.background = `rgba(255,255,255,${0.25 + Math.random()*0.5})`;
+    el.style.borderRadius = '50%';
+    el.style.position = 'absolute';
+    el.style.animation = `floatUp ${6 + Math.random()*8}s linear ${Math.random()*3}s infinite`;
+    container.appendChild(el);
+  }
+}
+
+/* ---------- Timer (real-time) ---------- */
+const startDate = new Date("2022-09-02T00:00:00");
+function updateTimer(){
+  const now = new Date();
+  let diff = Math.floor((now - startDate)/1000);
+  const years = Math.floor(diff/(365*24*3600)); diff -= years * 365*24*3600;
+  const months = Math.floor(diff/(30*24*3600)); diff -= months * 30*24*3600;
+  const days = Math.floor(diff/(24*3600)); diff -= days * 24*3600;
+  const hours = Math.floor(diff/3600); diff -= hours * 3600;
+  const minutes = Math.floor(diff/60); const seconds = diff % 60;
+  document.getElementById('timer').textContent = `${years} años, ${months} meses, ${days} días, ${hours}h ${minutes}m ${seconds}s juntos 💕`;
+}
+setInterval(updateTimer,1000);
+updateTimer();
+
+/* ---------- Music control ---------- */
+const bgAudio = document.getElementById('bgAudio');
+const musicBtn = document.getElementById('musicBtn');
+musicBtn.addEventListener('click', ()=>{
+  if(bgAudio.paused){ bgAudio.play().catch(()=>{}); musicBtn.textContent = '🔊 Pausar'; }
+  else{ bgAudio.pause(); musicBtn.textContent = '🎶 Reproducir / Pausar'; }
+});
+
+/* ---------- Floating hearts ---------- */
+(function spawnHearts(){
+  const colors = ['#ff4f81','#ff9a9e','#ffd36a','#ffb3e6','#c6ffdd'];
+  setInterval(()=>{
+    const el = document.createElement('div');
+    el.className = 'floating-heart';
+    el.innerText = '💖';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.color = colors[Math.floor(Math.random()*colors.length)];
+    el.style.fontSize = (12 + Math.random()*24) + 'px';
+    el.style.animationDuration = (4 + Math.random()*4) + 's';
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 7000);
+  },900);
+})();
+
+/* ---------- Cursor trail hearts ---------- */
+const trail = document.getElementById('cursorTrail');
+document.addEventListener('mousemove', (e)=>{
+  const el = document.createElement('div');
+  el.className = 'cursor-heart';
+  const items = ['💗','💖','💝','💞','💕'];
+  el.textContent = items[Math.floor(Math.random()*items.length)];
+  el.style.left = e.clientX + 'px';
+  el.style.top = e.clientY + 'px';
+  el.style.fontSize = (12 + Math.random()*14) + 'px';
+  trail.appendChild(el);
+  requestAnimationFrame(()=> { el.style.transform = `translate(${(Math.random()*40-20)}px, -30px) scale(1.05)`; el.style.opacity = '0.6'; });
+  setTimeout(()=> { el.style.opacity = '0'; setTimeout(()=> el.remove(), 600); }, 500);
+});
+
+/* ---------- Confetti helper (optional) ---------- */
+function launchConfetti(){
+  const container = document.getElementById('confetti');
+  const colors = ['#ff6b9a','#ffd36a','#7ed6ff','#ffb3e6','#c6ffdd'];
+  const n = 60;
+  for(let i=0;i<n;i++){
+    const c = document.createElement('div');
+    c.style.position = 'absolute';
+    c.style.left = (50 + (Math.random()*80-40)) + 'vw';
+    c.style.top = (15 + Math.random()*30) + 'vh';
+    c.style.width = (6 + Math.random()*10) + 'px';
+    c.style.height = (8 + Math.random()*12) + 'px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    container.appendChild(c);
+    const dur = 1400 + Math.random()*1600;
+    c.animate([
+      { transform: `translateY(0px) rotate(${Math.random()*360}deg)`, opacity:1 },
+      { transform: `translateY(${300 + Math.random()*500}px) rotate(${Math.random()*1080}deg)`, opacity:0.1 }
+    ], { duration: dur, easing: 'cubic-bezier(.17,.67,.83,.67)' });
+    setTimeout(()=> c.remove(), dur + 80);
+  }
+}
+
+/* ---------- Carousel 3D (interactive + auto, optimized for mobile) ---------- */
+let carouselEl, nSlides, anglePer, radius;
+let currentRotation = 0; // degrees (positive clockwise)
+let rafId = null;
+let isPointerDown = false, lastX = 0, velocity = 0, lastTime = 0;
+
+function initCarousel3D(){
+  carouselEl = document.getElementById('carousel3d');
+  carouselEl.innerHTML = '';
+  nSlides = IMAGES.length;
+  anglePer = 360 / nSlides;
+
+  // build slides
+  IMAGES.forEach((src,i)=>{
+    const s = document.createElement('div');
+    s.className = 'slide';
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = `Foto ${i+1}`;
+    s.appendChild(img);
+    carouselEl.appendChild(s);
+  });
+
+  // after images have layouted, position them
+  setTimeout(positionSlides, 60);
+  window.addEventListener('resize', ()=> { clearTimeout(window._posTimer); window._posTimer = setTimeout(positionSlides, 100); });
+
+  // pointer (mouse & touch) - using pointer events so it works on mobile
+  const wrap = document.getElementById('carouselWrap');
+  wrap.style.touchAction = 'pan-y';
+  wrap.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  wrap.addEventListener('pointerleave', onPointerUp);
+
+  // nav
+  document.getElementById('prevBtn').addEventListener('click', ()=> manualRotate(-1));
+  document.getElementById('nextBtn').addEventListener('click', ()=> manualRotate(1));
+}
+
+function positionSlides(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  if(!slides.length) return;
+
+  // slide width (actual) -> used to compute safe radius
+  const rect = slides[0].getBoundingClientRect();
+  const slideW = rect.width;
+  const slideH = rect.height;
+
+  // compute minimal radius so slides don't overlap visually:
+  // formula radius = (slideWidth/2) / tan(pi / nSlides)
+  let baseRadius = (slideW/2) / Math.tan(Math.PI / nSlides);
+  // add some padding factor to ensure faces don't overlap — on small screens increase factor
+  const paddingFactor = (window.innerWidth < 480) ? 1.5 : (window.innerWidth < 820 ? 1.25 : 1.05);
+  radius = Math.round(baseRadius * paddingFactor);
+
+  // ensure radius at least slideW (avoid too small)
+  radius = Math.max(radius, slideW * 1.05);
+
+  // adjust perspective (smaller screens, smaller perspective)
+  const wrap = document.getElementById('carouselWrap');
+  const perspective = Math.max(900, slideW * 6);
+  wrap.style.perspective = perspective + 'px';
+
+  slides.forEach((s,i)=>{
+    const ang = i * anglePer;
+    s.style.transform = `rotateY(${ang}deg) translateZ(${radius}px)`;
+  });
+
+  // apply current rotation
+  updateCarousel();
+}
+
+function updateCarousel(){
+  if(!carouselEl) return;
+  carouselEl.style.transform = `translateZ(-${radius}px) rotateY(${currentRotation}deg)`;
+}
+
+/* Auto-rotate loop */
+function startAutoRotate(){
+  lastTime = performance.now();
+  if(rafId) cancelAnimationFrame(rafId);
+  rafId = requestAnimationFrame(autoLoop);
+}
+function stopAutoRotate(){
+  if(rafId) cancelAnimationFrame(rafId);
+  rafId = null;
+}
+function autoLoop(t){
+  const dt = t - lastTime; lastTime = t;
+  if(!isPointerDown){
+    // auto clockwise rotation; tweak speed here (deg per ms)
+    currentRotation += 0.015 * dt; // ~9 deg/s; adjust if you want faster/slower
+    // apply inertia velocity if present
+    if(Math.abs(velocity) > 0.0001){ currentRotation += velocity * (dt/16); velocity *= 0.97; }
+    updateCarousel();
+  } else {
+    // while interacting, we still apply small inertia
+    if(Math.abs(velocity) > 0.0001){ currentRotation += velocity; velocity *= 0.97; updateCarousel(); }
+  }
+  rafId = requestAnimationFrame(autoLoop);
+}
+
+/* Pointer drag handlers */
+function onPointerDown(e){
+  isPointerDown = true;
+  lastX = e.clientX;
+  velocity = 0;
+  // stop default inertia for touch
+  e.target.setPointerCapture && e.target.setPointerCapture(e.pointerId);
+}
+function onPointerMove(e){
+  if(!isPointerDown) return;
+  const dx = e.clientX - lastX;
+  lastX = e.clientX;
+  const sensitivity = 0.28; // degrees per px, tuned for good feel
+  const deltaDeg = dx * sensitivity;
+  currentRotation += deltaDeg;
+  velocity = deltaDeg; // store for inertia
+  updateCarousel();
+}
+function onPointerUp(e){
+  if(!isPointerDown) return;
+  isPointerDown = false;
+  // resume auto after short timeout (autoLoop continues)
+  setTimeout(()=> { /* auto resumes automatically */ }, 900);
+}
+
+/* manual rotate buttons (snap to nearest) */
+function manualRotate(step){
+  // compute current front index
+  const norm = ((-currentRotation % 360) + 360) % 360;
+  const currentIndex = Math.round(norm / anglePer) % nSlides;
+  const targetIndex = (currentIndex + step + nSlides) % nSlides;
+  const desired = - targetIndex * anglePer;
+  animateRotationTo(desired, 600);
+}
+function animateRotationTo(targetDeg, duration){
+  const start = performance.now();
+  const from = currentRotation;
+  // shortest delta
+  let diff = ((targetDeg - from + 54000) % 360) - 180;
+  function step(ts){
+    const p = Math.min(1, (ts - start)/duration);
+    const ease = p < 0.5 ? 2*p*p : -1 + (4-2*p)*p;
+    currentRotation = from + diff * ease;
+    updateCarousel();
+    if(p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* keyboard accessibility */
+document.addEventListener('keydown', (e)=>{
+  if(document.getElementById('content').style.display !== 'block') return;
+  if(e.key === 'ArrowLeft') manualRotate(-1);
+  if(e.key === 'ArrowRight') manualRotate(1);
+});
+
+/* ---------- init small decorative particles immediately ---------- */
+(function initDecorParticles(){
+  const container = document.getElementById('bgParticles');
+  for(let i=0;i<20;i++){
+    const el = document.createElement('div');
+    el.className = 'bg-particle';
+    const s = 3 + Math.random()*7;
+    el.style.width = el.style.height = s + 'px';
+    el.style.left = Math.random()*100 + 'vw';
+    el.style.top = (75 + Math.random()*25) + 'vh';
+    el.style.animationDuration = (8 + Math.random()*7) + 's';
+    el.style.animationDelay = Math.random()*3 + 's';
+    el.style.background = `rgba(255,255,255,${0.25 + Math.random()*0.45})`;
+    container.appendChild(el);
+  }
+})();
+
+/* ---------- The carousel will be initialized when the letter is closed (closeLetter()) ---------- */
+
+</script>
+</body>
+</html>
